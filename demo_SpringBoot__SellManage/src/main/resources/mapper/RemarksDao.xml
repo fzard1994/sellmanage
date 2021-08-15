@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.dao.RemarksDao">
+    <select id="selectAllRemarksByCustomerId"  resultType="Remarks">
+        select customerId, contactsId, details, time
+         from t_remarks where customerId=#{customerID};
+    </select>
+
+    <insert id="insertRemarks" parameterType="com.example.demo.pojo.Remarks">
+    <selectKey keyProperty="id" resultType="java.lang.String" order="BEFORE">
+    select replace(uuid(),'-','')as id from dual
+    </selectKey>
+    insert into t_remarks (id,customerId,contactsId,details,time) VALUES
+        (#{id},#{customerId},#{contactsId},#{details},#{time})
+    </insert>
+</mapper>

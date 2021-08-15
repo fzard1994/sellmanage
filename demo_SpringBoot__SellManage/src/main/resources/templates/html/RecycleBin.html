@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<script type="text/javascript" src="../js/jquery-3.6.0.js"></script>
+<html lang="en"xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>回收站</title>
+</head>
+
+<body>
+员工姓名：<span th:text="${session.Staffname}"/>
+<a th:href="@{/mainPage}">个人客户管理</a>
+<br>
+<a th:href="@{/RecycleBin}">回收站</a>
+<hr>
+    <table width="90%">
+        <tr>
+            <td>客户姓名</td>
+            <td>电话</td>
+            <td>意向度</td>
+            <td>详情</td>
+            <td>加入我客户管理</td>
+        </tr>
+
+        <tbody id="tbody"></tbody>
+        <script>
+            $(function () {
+                $.post(
+                "/RecycleBinController/selectAllCustomerByRecycle",
+                    function (data) {
+                    console.log(data);
+                        var html="";
+                        for (var i=0;i<data.length;i++){
+                            html+="<tr>"+
+                                "<td>"+data[i].name+"</td>"+
+                                "<td>"+data[i].tel+"</td>"+
+                                "<td>"+data[i].intention+"</td>"+
+                                "<td>"+
+                                "<a href='/RemarksController/RemarksPage?customerId="+
+                                data[i].customerId
+                                +"'>详情</a>"+
+                                "</td>"+
+                                "<td>" +
+                                "<a href='/RecycleBinController/insertCustomerBin?customerId="+
+                                data[i].customerId
+                                +"'>加入我的客户管理</a>"+
+                                "</td>"+
+                                "</tr>"
+                        }
+                        $("#tbody").html(html);
+                    }
+                )
+            })
+        </script>
+    </table>
+</body>
+</html>

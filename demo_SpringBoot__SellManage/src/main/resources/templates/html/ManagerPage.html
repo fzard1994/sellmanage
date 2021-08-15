@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<script type="text/javascript" src="../js/jquery-3.6.0.js"></script>
+<html lang="en"xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>管理页面</title>
+</head>
+<body>
+员工姓名：<span th:text="${session.Staffname}"/>
+<a th:href="@{/mainPage}">个人客户管理</a>
+<br>
+<a th:href="@{/RecycleBin}">回收站</a>
+<hr>
+    <h1>管理部门所有客户信息</h1>
+    <H2>筛选功能</H2>
+    部门员工：<select id="select-staff-id"></select>
+    <script>
+        $(function () {
+            $.post(
+                "/ManagerController/selectStaff",
+                function (data) {
+                    var html="";
+                    html+="<option value='all'>所有人</option>";
+                    for (var i=0;i<data.length;i++){
+                        html+=
+                            "<option value='"+data[i].staffId+"'>"+ data[i].name+ "</option>";
+                    }
+                    $("#select-staff-id").html(html);
+                }
+            )
+        })
+    </script>
+    <nbsp/>
+    意向度：
+    <select id="select-intention" >
+        <option value="all">所有</option>
+        <option value="A">A</option>
+        <option value="B">B</option>
+        <option value="C">C</option>
+        <option value="D">D</option>
+    </select>
+    <input type="button" value="确认" id="bottom"/>
+    <script>
+        $(function () {
+            $("#bottom").click(function () {
+                $.post(
+                    "/ManagerController/selectCustomerByStaffIdAndIntention",
+                    {
+                        "staffId":$("#select-staff-id").val(),
+                        "intention":$("#select-intention").val()
+                    },
+                    function (data) {
+                        var html="";
+                        for (var i=0;i<data.length;i++){
+                            html+="<tr>"+
+                        "<td><input type='checkbox' name='checkbox' value='"+data[i].customerId+"'></td>"+
+                                "<td>"+data[i].staffname+"</td>"+
+                                "<td>"+data[i].name+"</td>"+
+                                "<td>"+data[i].intention +"</td>"+
+                                "<td>"+data[i].tel+"</td>"+
+                                "<td>"+
+                                "<a href='/RemarksController/RemarksPage?customerId="+
+                                data[i].customerId
+                                +"'>详情</a>"+
+                                "</td>"+
+                                "</tr>";
+                        }
+                        $("#tbody").html(html);
+                    }
+                )
+            })
+        })
+    </script>
+    <h2>分配功能</h2>
+        分配给:：<select id="fenpei"></select>
+    <input type="button" id="feipen-button" value="确认"/>
+    <script>
+        $(function () {
+            $.post(
+                "/ManagerController/selectStaff",
+                function (data) {
+                    var html="";
+                    for (var i=0;i<data.length;i++){
+                        html+=
+                            "<option value='"+data[i].staffId+"'>"+ data[i].name+ "</option>";
+                    }
+                    $("#fenpei").html(html);
+                }
+            )
+            
+            $("#feipen-button").click(function () {
+                var list=[];
+                $("input[name='checkbox']:checked").each(function(i){
+                    list[i]=$(this).val();
+                });
+
+                $.post({
+                    url:"/ManagerController/giveSomeOne",
+                    data:{"list":list,"staffId":$("#fenpei").val()},
+                    traditional:true,
+                    success:function (data) {
+                        alert(data.toString());
+                        $.post(
+                            "/ManagerController/defaultSelect",
+                            function (data) {
+                                console.log(data)
+                                var html="";
+                                for (var i=0;i<data.length;i++){
+                                    html+="<tr>"+
+                                        "<td><input type='checkbox' name='checkbox' value='"+data[i].customerId+"'></td>"+
+                                        "<td>"+data[i].staffname+"</td>"+
+                                        "<td>"+data[i].name+"</td>"+
+                                        "<td>"+data[i].intention +"</td>"+
+                                        "<td>"+data[i].tel+"</td>"+
+                                        "<td>"+
+                                        "<a href='/RemarksController/RemarksPage?customerId="+
+                                        data[i].customerId
+                                        +"'>详情</a>"+
+                                        "</td>"+
+                                        "</tr>";
+                                }
+                                $("#tbody").html(html);
+                            }
+                        )
+                    }
+                })
+            })
+        })
+    </script>
+    <hr>
+    <table width="100%">
+        <tr>
+            <td></td>
+            <td>员工姓名</td>
+            <td>客户姓名</td>
+            <td>客户意向度</td>
+            <td>客户电话</td>
+            <td>详情</td>
+        </tr>
+        <tbody id="tbody"></tbody>
+    </table>
+    <script>
+        $(function e () {
+            $.post(
+                "/ManagerController/defaultSelect",
+                function (data) {
+                    console.log(data)
+                    var html="";
+                    for (var i=0;i<data.length;i++){
+                        html+="<tr>"+
+                    "<td><input type='checkbox' name='checkbox' value='"+data[i].customerId+"'></td>"+
+                            "<td>"+data[i].staffname+"</td>"+
+                            "<td>"+data[i].name+"</td>"+
+                            "<td>"+data[i].intention +"</td>"+
+                            "<td>"+data[i].tel+"</td>"+
+                            "<td>"+
+                            "<a href='/RemarksController/RemarksPage?customerId="+
+                            data[i].customerId
+                            +"'>详情</a>"+
+                            "</td>"+
+                            "</tr>";
+                    }
+                    $("#tbody").html(html);
+                }
+            )
+        })
+    </script>
+</body>
+</html>

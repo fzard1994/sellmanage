@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<html lang="en"xmlns:th="http://www.thymeleaf.org">
+<script type="text/javascript" src="../js/jquery-3.6.0.js"></script>
+<head>
+
+    <meta charset="UTF-8">
+    <title>备注</title>
+</head>
+<body>
+员工姓名：<span th:text="${session.Staffname}"/>
+<a th:href="@{/mainPage}">个人客户管理</a>
+<br>
+<a th:href="@{/RecycleBin}">回收站</a>
+<hr>
+    <h1><span id="customer" th:text="${customerName}"></span></h1>
+    <input type="text" th:value="${customerId}" id="customer-id" hidden/>
+    <input type="text" th:value="${customerIntention}" id="customer-intention" hidden/>
+    修改意向度:
+    <select name="intention" id="intention">
+        <option id="a" value="A" >A</option>
+        <option id="b" value="B">B</option>
+        <option id="c" value="C" >C</option>
+        <option id="d" value="D">D</option>
+    </select>
+    <script>
+        $(function () {
+            var intention=$("#customer-intention").val().toString();
+            if (intention=="A"){
+                $("#a").attr("selected","selected")
+            }else if (intention=="B"){
+                $("#b").attr("selected","selected")
+            }else if (intention=="C"){
+                $("#c").attr("selected","selected")
+            }else {
+                $("#d").attr("selected","selected")
+            }
+        })
+
+    </script>
+    <input type="button" value="确认修改" id="update-intention">
+    <script>
+        $(function () {
+            $("#update-intention").click(function () {
+                $.post(
+                    "/RemarksController/updateIntention",
+                    {"customerId":$("#customer-id").val(),
+                    "intention":$("#intention").val()
+                    },
+                    function (data) {
+                        if(data.toString()=="success"){
+                            alert("修改成功")
+
+                        }
+                    }
+                )
+            })
+        })
+    </script>
+
+<hr>
+    <table width="100%">
+        <tr>
+            <td>联系人</td>
+            <td>联系时间</td>
+            <td>信息</td>
+        </tr>
+
+        <tbody id="about-dialog-button-bar">
+        </tbody>
+    </table>
+
+    <script>
+        $(function () {
+            $.post(
+                "/RemarksController/DefaultIterator",
+                {"customerId":$("#customer-id").val()},
+                function (data) {
+                    console.log(data)
+                    var html="";
+                    for (var i=0;i<data.length;i++){
+                        html+="<tr>"+
+                            "<td>"+data[i].contactsId+"</td>"+
+                            "<td>"+data[i].time+"</td>"+
+                            "<td>"+data[i].details +"</td>"+
+                            "</tr>"
+                    }
+                    $("#about-dialog-button-bar").html(html);
+                }
+            )
+        })
+    </script>
+<h2>提交信息</h2>
+    <textarea width="100%" high="20%" id="about-dialog-text-area">
+    </textarea>
+    <br>
+    <input type="button" value="提交" id="bottom-text"/>
+    <script>
+        $(function () {
+            $("#bottom-text").click(function () {
+                $.post(
+                    "/RemarksController/insertInfo",
+                    {
+                        "info":$("#about-dialog-text-area").val(),
+                        "customerId":$("#customer-id").val()
+                    },
+                    function (data) {
+                        if (data.toString()=="success"){
+                            alert("添加成功")
+
+                            $.post(
+                                "/RemarksController/DefaultIterator",
+                                {"customerId":$("#customer-id").val()},
+                                function (data) {
+                                    var html="";
+                                    for (var i=0;i<data.length;i++){
+                                        html+="<tr>"+
+                                            "<td>"+data[i].contactsId+"</td>"+
+                                            "<td>"+data[i].time+"</td>"+
+                                            "<td>"+data[i].details +"</td>"+
+                                            "</tr>"
+                                    }
+                                    $("#about-dialog-button-bar").html(html);
+                                }
+                            )
+
+                        }else {
+                            alert("添加失败")
+                        }
+                    }
+                );
+            })
+        })
+    </script>
+</body>
+</html>

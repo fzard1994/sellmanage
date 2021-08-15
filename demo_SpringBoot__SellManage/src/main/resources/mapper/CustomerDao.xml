@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.dao.CustomerDao">
+    <select id="selectAllCustomerByOwner" resultType="Customer">
+          select customerId, name, sex, Tel, job, owner, intention
+          from t_customer
+          where owner=#{Owner}
+    </select>
+
+    <update id="insertToRecycleBin">
+        update t_customer
+        set owner="recyclebin"
+        where customerId=#{customerId}
+    </update>
+
+    <select id="selectCustomerById" resultType="Customer">
+        select customerId, name, sex, Tel, job, owner, intention
+        from t_customer
+        where customerId=#{customerId}
+    </select>
+
+    <update id="updateIntention">
+        update t_customer
+        set intention=#{intention}
+        where customerId=#{customerId}
+    </update>
+
+    <update id="updateCustmerOwnerByStaffIdAndCusId">
+        update t_customer
+        set owner=#{staffId}
+        where customerId=#{customerId}
+    </update>
+
+
+
+
+    <select id="selectAllCustomerIdenticalDepart" resultType="Customer">
+        select customerId, name, sex, Tel, job, owner, intention,staffname
+        from t_customer
+        join
+        (select name staffname,staffId id from t_staff where department=#{depart})t2
+        on owner=t2.id
+    </select>
+
+    <select id="selectAllCustomerByStaffIdAndIntention" resultType="Customer">
+        select customerId, name, sex, Tel, job, owner, intention,staffname
+        from t_customer
+        join
+        (select name staffname,staffId id from t_staff where staffId=#{staffId})t2
+        on owner=id and intention=#{intention}
+    </select>
+
+    <select id="selectAllCustomerByDepartAndIntention" resultType="Customer">
+        select customerId, name, sex, Tel, job, owner, intention,staffname
+        from t_customer
+        join
+        (select name staffname,staffId id from t_staff where department=#{depart})t2
+        on owner=id and intention=#{intention}
+    </select>
+
+    <select id="selectAllCustomerByStaffId" resultType="Customer">
+        select customerId, name, sex, Tel, job, owner, intention,staffname
+        from t_customer
+        join
+        (select name staffname,staffId id from t_staff where staffId=#{staffId})t2
+        on owner=id
+    </select>
+</mapper>

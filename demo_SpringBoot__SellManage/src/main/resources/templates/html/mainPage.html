@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<html lang="en"xmlns:th="http://www.thymeleaf.org">
+
+
+
+<head>
+    <meta charset="UTF-8">
+    <title>主页面</title>
+</head>
+员工姓名：<span th:text="${session.Staffname}"/>
+<a th:href="@{/mainPage}">个人客户管理</a>
+<br>
+<a th:href="@{/RecycleBin}">回收站</a>
+<hr>
+
+    <a th:href="@{/mainPage}">个人客户管理</a>
+<br>
+
+<a th:href="@{/RecycleBin}">回收站</a>
+<br>
+<div shiro:hasPermission="manger">
+<a th:ha th:href="@{/ManagerPage}">部门管理</a>
+</div>
+<br>
+
+</body>
+</html>
